@@ -1,10 +1,11 @@
-# Auto detect text files
-* text=auto
+* text=auto eol=lf
 
-# Shell scripts always use LF
-*.sh text eol=lf
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
 
-# Docker files use LF
-Dockerfile text eol=lf
-docker-compose.yaml text eol=lf
-docker-compose.yml text eol=lf
+/.github export-ignore
+CHANGELOG.md export-ignore
+.styleci.yml export-ignore
