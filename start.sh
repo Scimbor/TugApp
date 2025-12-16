@@ -10,19 +10,17 @@ openssl x509 -req -days 365 -in /etc/ssl/private/nginx-selfsigned.csr \
 
 cd /var/www/html
 
-# Check if Laravel is installed
-if [ ! -f "composer.json" ]; then
-    echo "Creating new Laravel project..."
-    cd /var/www
-    composer create-project --prefer-dist laravel/laravel:^12.0 temp_project
-    mv temp_project/* temp_project/.* html/ 2>/dev/null || true
-    rm -rf temp_project
-    cd /var/www/html
+echo "Installing PHP dependencies (if needed)..."
+if [ ! -d "vendor" ]; then
+    composer install --no-interaction --optimize-autoloader
 fi
 
-echo "Installing dependencies..."
-composer install --no-interaction --optimize-autoloader
-npm install
+echo "Installing Node dependencies (if needed)..."
+if [ ! -d "node_modules" ]; then
+    npm install
+fi
+
+echo "Building frontend assets..."
 npm run build
 
 echo "Setting up Laravel..."
@@ -39,7 +37,6 @@ if [ ! -f ".env" ]; then
 fi
 
 php artisan migrate --force
-php artisan optimize
 
 echo "Starting services..."
 /usr/sbin/service php8.4-fpm start

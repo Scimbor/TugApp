@@ -10,6 +10,7 @@ services:
       - 80:80
       - 443:443
       - 9000:9000
+      - 5173:5173
     volumes:
       - ./nginx:/etc/nginx
       - ./nginx/logs:/var/log/nginx/
