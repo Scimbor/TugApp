@@ -26,7 +26,7 @@ class AuthPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('auth')
-            ->path('auth')
+            ->path('panel')
             ->login()
             ->colors([
                 'primary' => Color::Amber,

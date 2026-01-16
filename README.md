@@ -1,59 +1,57 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TugApp
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikacja do zarządzania zgłoszeniami i użytkownikami zbudowana w Laravel z wykorzystaniem panelu administracyjnego Filament.
 
-## About Laravel
+## Funkcjonalności
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Panel Administracyjny
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Aplikacja wykorzystuje Filament jako panel administracyjny, zapewniający intuicyjny interfejs do zarządzania danymi oraz bezpieczny dostęp do funkcji systemu.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Zarządzanie Użytkownikami
 
-## Learning Laravel
+**Dostęp:** Tylko dla użytkowników z rolą administratora
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Tworzenie kont użytkowników** - możliwość dodawania nowych użytkowników do systemu
+- **Edycja danych użytkowników** - modyfikacja informacji o użytkownikach, w tym adresu email i roli
+- **Zarządzanie hasłami** - bezpieczne hashowanie haseł przy użyciu bcrypt, opcjonalna zmiana hasła podczas edycji
+- **Przypisywanie ról** - system ról z dwoma poziomami dostępu:
+  - **Admin** - pełny dostęp do wszystkich funkcji systemu, w tym zarządzania użytkownikami
+  - **Użytkownik** - standardowy dostęp do podstawowych funkcji
+- **Usuwanie użytkowników** - możliwość usuwania kont z systemu
+- **Lista użytkowników** - przeglądanie wszystkich użytkowników z informacjami o loginie, emailu, roli oraz datach utworzenia i aktualizacji
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Zarządzanie Zgłoszeniami (Incydentami)
 
-## Laravel Sponsors
+- **Tworzenie zgłoszeń** - rejestrowanie nowych incydentów związanych z pojazdami
+- **Edycja zgłoszeń** - modyfikacja istniejących zgłoszeń
+- **Usuwanie zgłoszeń** - usuwanie zgłoszeń z systemu (pojedynczo lub masowo)
+- **Informacje o pojeździe** - przechowywanie szczegółowych danych pojazdu:
+  - Numer rejestracyjny
+  - Numer VIN
+  - Marka pojazdu
+  - Model pojazdu
+  - Typ pojazdu
+- **Opis zgłoszenia** - szczegółowy opis incydentu lub problemu
+- **Statusy zgłoszeń** - system statusów z kolorowymi oznaczeniami:
+  - **Otwarty** - nowo utworzone zgłoszenie
+  - **W realizacji** - zgłoszenie aktualnie przetwarzane
+  - **Oczekujący** - zgłoszenie oczekujące na podjęcie działań
+  - **Wstrzymany** - zgłoszenie tymczasowo wstrzymane
+  - **Zakończony** - zgłoszenie pomyślnie zakończone
+  - **Odwołany** - zgłoszenie anulowane
+- **Lista zgłoszeń** - przeglądanie wszystkich zgłoszeń z informacjami o numerze rejestracyjnym, statusie oraz datach utworzenia i aktualizacji
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Bezpieczeństwo
 
-### Premium Partners
+- Hasła użytkowników są automatycznie hashowane przy użyciu bcrypt przed zapisem do bazy danych
+- Kontrola dostępu oparta na rolach użytkowników
+- Panel administracyjny dostępny tylko dla autoryzowanych użytkowników
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Technologie
 
-## Contributing
+- Laravel
+- Filament (Panel administracyjny)
+- MySQL
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
