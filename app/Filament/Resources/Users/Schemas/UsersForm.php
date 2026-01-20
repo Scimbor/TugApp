@@ -14,6 +14,8 @@ class UsersForm
     {   
         return $schema
             ->components([
+                TextInput::make('name')
+                    ->required(),
                 TextInput::make('email')
                     ->email()
                     ->required(),

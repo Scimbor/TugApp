@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Support\Facades\Storage;
+use Spatie\Activitylog\LogOptions;
 
 class Incident extends Model
 {
+    use LogsActivity;
 
     const STATUS_OPEN = 'open';
     const STATUS_CLOSED = 'closed';
@@ -37,4 +41,38 @@ class Incident extends Model
 
     protected $table = 'incidents';
     protected $fillable = ['user_panel_id', 'vehicle_number', 'vehicle_vin', 'vehicle_brand', 'vehicle_model', 'vehicle_type', 'description', 'status'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($incident) {
+            $images = $incident->images;
+            
+            foreach ($images as $image) {
+                if ($image->image_path && Storage::exists($image->image_path)) {
+                    Storage::delete($image->image_path);
+                }
+            }
+
+            $directoryPath = "incidents_images/{$incident->id}";
+            
+            if (Storage::exists($directoryPath)) {
+                Storage::deleteDirectory($directoryPath);
+            }
+        });
+    }
+
+    public function images()
+    {
+        return $this->hasMany(IncidentImage::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->useLogName('Incident Log')
+        ->logOnly($this->fillable)
+        ->logOnlyDirty(); 
+    }
 }
