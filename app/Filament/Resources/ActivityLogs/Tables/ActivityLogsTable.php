@@ -34,6 +34,7 @@ class ActivityLogsTable
             ])
             ->toolbarActions([
 
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 }

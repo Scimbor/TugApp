@@ -62,4 +62,13 @@ class UsersResource extends Resource
     {
         return auth()->user()?->role === User::ADMIN_ROLE;
     }
+
+    public static function canEdit($record): bool
+    {
+        if ($record instanceof User && !$record->is_active) {
+            return false;
+        }
+        
+        return parent::canEdit($record) ?? true;
+    }
 }

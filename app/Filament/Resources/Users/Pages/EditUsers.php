@@ -13,9 +13,7 @@ class EditUsers extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        return [
-            DeleteAction::make(),
-        ];
+        return [];
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
@@ -27,5 +25,14 @@ class EditUsers extends EditRecord
         }
 
         return $data;
+    }
+
+    public static function canEdit($record): bool
+    {
+        if ($record instanceof User && !$record->is_active) {
+            return false;
+        }
+        
+        return parent::canEdit($record) ?? true;
     }
 }

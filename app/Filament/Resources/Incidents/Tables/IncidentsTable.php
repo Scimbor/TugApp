@@ -9,6 +9,12 @@ use Filament\Actions\DeleteAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use App\Models\Incident;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Forms\Components;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\TextInput;
 
 class IncidentsTable
 {
@@ -27,7 +33,31 @@ class IncidentsTable
                 TextColumn::make('updated_at')->label('Data aktualizacji'),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->options(Incident::STATUS_OPTIONS),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from')->label('Od'),
+                        DatePicker::make('created_until')->label('Do'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+                    Filter::make('vehicle_number')
+                        ->form([
+                            TextInput::make('vehicle_number')->label('Numer rejestracyjny'),
+                        ])
+                        ->query(function (Builder $query, array $data) {
+                            return $query->where('vehicle_number', 'like', '%' . $data['vehicle_number'] . '%');
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
