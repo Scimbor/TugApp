@@ -23,4 +23,39 @@ class EditIncident extends EditRecord
 
         return $data;
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $incident = $this->record;
+        
+        if ($incident->address) {
+            $data['address'] = [
+                'street' => $incident->address->street,
+                'house_number' => $incident->address->house_number,
+                'apartment_number' => $incident->address->apartment_number,
+                'city' => $incident->address->city,
+                'zip' => $incident->address->zip,
+            ];
+        }
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (isset($data['address'])) {
+            $addressData = $data['address'];
+            unset($data['address']);
+
+            $incident = $this->record;
+            
+            if ($incident->address) {
+                $incident->address->update($addressData);
+            } else {
+                $incident->address()->create($addressData);
+            }
+        }
+
+        return $data;
+    }
 }

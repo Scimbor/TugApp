@@ -17,11 +17,25 @@ class CreateIncident extends CreateRecord
         return $data;
     }
 
-    protected function afterCreate(): void
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
     {
-        $incident = $this->record;
+        // Usuń adres z danych przed utworzeniem incydentu
+        $addressData = null;
+        if (isset($data['address'])) {
+            $addressData = $data['address'];
+            unset($data['address']);
+        }
+
+        // Utwórz incydent
+        $incident = parent::handleRecordCreation($data);
         $incidentId = $incident->id;
 
+        // Zapisz adres jeśli został podany
+        if ($addressData) {
+            $incident->address()->create($addressData);
+        }
+
+        // Przenieś zdjęcia do właściwego katalogu
         foreach ($incident->images ?? [] as $image) {
             $currentPath = $image->image_path;
             
@@ -38,6 +52,8 @@ class CreateIncident extends CreateRecord
                 }
             }
         }
+
+        return $incident;
     }
 
     protected function getRedirectUrl(): string

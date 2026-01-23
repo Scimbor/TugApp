@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use Filament\Actions\Action;
 use App\Models\User;
 use App\Filament\Resources\Users\UsersResource;
+use Filament\Tables\Filters\SelectFilter;
 
 class UsersTable
 {
@@ -19,8 +20,8 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('id'),
-                TextColumn::make('name')->label('Login'),
-                TextColumn::make('email')->label('E-mail'),
+                TextColumn::make('name')->label('Login')->searchable(),
+                TextColumn::make('email')->label('E-mail')->searchable(),
                 TextColumn::make('role')->label('Rola'),
                 TextColumn::make('created_at')->label('Data utworzenia'),
                 TextColumn::make('updated_at')->label('Data aktualizacji'),
@@ -31,7 +32,9 @@ class UsersTable
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
             ])
             ->filters([
-                //
+                SelectFilter::make('role')
+                ->label('Rola')
+                ->options(User::ROLES),
             ])
             ->recordUrl(fn (User $record) => $record->is_active 
                 ? UsersResource::getUrl('edit', ['record' => $record])

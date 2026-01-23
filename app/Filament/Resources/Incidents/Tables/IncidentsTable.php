@@ -34,7 +34,8 @@ class IncidentsTable
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->options(Incident::STATUS_OPTIONS),
+                    ->options(Incident::STATUS_OPTIONS)
+                    ->multiple(),
                 Filter::make('created_at')
                     ->form([
                         DatePicker::make('created_from')->label('Od'),
@@ -67,6 +68,7 @@ class IncidentsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 }

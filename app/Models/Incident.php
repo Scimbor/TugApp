@@ -68,6 +68,11 @@ class Incident extends Model
         return $this->hasMany(IncidentImage::class);
     }
 
+    public function address()
+    {
+        return $this->hasOne(IncidentAddress::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
