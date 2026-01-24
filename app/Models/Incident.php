@@ -21,7 +21,7 @@ class Incident extends Model
     
     const STATUS_OPTIONS = [
         self::STATUS_OPEN => 'Otwarty',
-        self::STATUS_CLOSED => 'Zakończony',
+        self::STATUS_CLOSED => 'Zamknięty',
         self::STATUS_IN_PROGRESS => 'W realizacji',
         self::STATUS_PENDING => 'Oczekujący',
         self::STATUS_CANCELLED => 'Odowłany',
@@ -37,6 +37,12 @@ class Incident extends Model
         self::STATUS_CANCELLED => 'danger',
         self::STATUS_COMPLETED => 'success',
         self::STATUS_ON_HOLD => 'warning',
+    ];
+
+    const CLOSED_MODIFICATION_ROW_STATUSES = [
+        self::STATUS_COMPLETED, 
+        self::STATUS_CLOSED, 
+        self::STATUS_CANCELLED,
     ];
 
     protected $table = 'incidents';
@@ -71,6 +77,11 @@ class Incident extends Model
     public function address()
     {
         return $this->hasOne(IncidentAddress::class);
+    }
+
+    public function depositFees()
+    {
+        return $this->hasMany(IncidentDepositFee::class);
     }
 
     public function getActivitylogOptions(): LogOptions

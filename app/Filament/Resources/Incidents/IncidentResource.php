@@ -55,4 +55,18 @@ class IncidentResource extends Resource
             'edit' => EditIncident::route('/{record}/edit'),
         ];
     }
+
+    public static function canEdit($record): bool
+    {
+        return parent::canEdit($record) ?? true;
+    }
+
+    public static function canDelete($record): bool
+    {
+        if (in_array($record->status, Incident::CLOSED_MODIFICATION_ROW_STATUSES)) {
+            return false;
+        }
+
+        return parent::canDelete($record) ?? true;
+    }
 }

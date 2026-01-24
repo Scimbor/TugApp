@@ -15,6 +15,7 @@ use Filament\Forms\Forms\Components;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\TextInput;
+use App\Filament\Resources\Incidents\IncidentResource;
 
 class IncidentsTable
 {
@@ -60,9 +61,12 @@ class IncidentsTable
                             return $query->where('vehicle_number', 'like', '%' . $data['vehicle_number'] . '%');
                     }),
             ])
+            ->recordUrl(fn (Incident $record) => IncidentResource::getUrl('edit', ['record' => $record]))
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()
+                    ->label(fn (Incident $record) => in_array($record->status, Incident::CLOSED_MODIFICATION_ROW_STATUSES) ? 'Podgląd' : 'Edycja'),
+                DeleteAction::make()
+                    ->visible(fn (Incident $record) => !in_array($record->status, Incident::CLOSED_MODIFICATION_ROW_STATUSES)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
