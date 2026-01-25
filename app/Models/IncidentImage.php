@@ -11,6 +11,8 @@ class IncidentImage extends Model
 {
     use LogsActivity;
 
+    const IMAGES_DIRECTORY = 'incidents_images';
+
     protected $table = 'incidents_images';
     protected $fillable = ['incident_id', 'image_path'];
 

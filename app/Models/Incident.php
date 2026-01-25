@@ -61,7 +61,7 @@ class Incident extends Model
                 }
             }
 
-            $directoryPath = "incidents_images/{$incident->id}";
+            $directoryPath = IncidentImage::IMAGES_DIRECTORY . "/{$incident->id}";
             
             if (Storage::exists($directoryPath)) {
                 Storage::deleteDirectory($directoryPath);
