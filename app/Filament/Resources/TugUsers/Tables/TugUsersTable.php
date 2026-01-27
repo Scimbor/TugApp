@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Users\Tables;
+namespace App\Filament\Resources\TugUsers\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -10,21 +10,19 @@ use Filament\Actions\DeleteAction;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use App\Models\User;
-use App\Filament\Resources\Users\UsersResource;
-use Filament\Tables\Filters\SelectFilter;
+use App\Filament\Resources\TugUsers\TugUsersResource;
 use Illuminate\Database\Eloquent\Builder;
 
-class UsersTable
+class TugUsersTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('role', User::PANEL_ROLES))
+            ->modifyQueryUsing(fn (Builder $query) => $query->where('role', User::TUG_ROLE))
             ->columns([
                 TextColumn::make('id'),
                 TextColumn::make('name')->label('Login')->searchable(),
                 TextColumn::make('email')->label('E-mail')->searchable(),
-                TextColumn::make('role')->label('Rola'),
                 TextColumn::make('created_at')->label('Data utworzenia'),
                 TextColumn::make('updated_at')->label('Data aktualizacji'),
                 TextColumn::make('is_active')
@@ -33,13 +31,8 @@ class UsersTable
                     ->badge()
                     ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
             ])
-            ->filters([
-                SelectFilter::make('role')
-                ->label('Rola')
-                ->options(User::PANEL_ROLES),
-            ])
             ->recordUrl(fn (User $record) => $record->is_active 
-                ? UsersResource::getUrl('edit', ['record' => $record])
+                ? TugUsersResource::getUrl('edit', ['record' => $record])
                 : null
             )
             ->recordActions([
@@ -50,16 +43,16 @@ class UsersTable
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->modalHeading('Dezaktywuj użytkownika')
-                    ->modalDescription('Czy na pewno chcesz dezaktywować tego użytkownika?')
+                    ->modalHeading('Dezaktywuj holownika')
+                    ->modalDescription('Czy na pewno chcesz dezaktywować tego holownika?')
                     ->modalSubmitActionLabel('Dezaktywuj')
                     ->action(function (User $record) {
                         $record->update(['is_active' => false]);
                         
                         \Filament\Notifications\Notification::make()
                             ->success()
-                            ->title('Użytkownik dezaktywowany')
-                            ->body('Użytkownik został pomyślnie dezaktywowany.')
+                            ->title('Holownik dezaktywowany')
+                            ->body('Holownik został pomyślnie dezaktywowany.')
                             ->send();
                     })
                     ->visible(fn (User $record) => $record->is_active === true),

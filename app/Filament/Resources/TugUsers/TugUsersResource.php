@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\Users;
+namespace App\Filament\Resources\TugUsers;
 
-use App\Filament\Resources\Users\Pages\CreateUsers;
-use App\Filament\Resources\Users\Pages\EditUsers;
-use App\Filament\Resources\Users\Pages\ListUsers;
-use App\Filament\Resources\Users\Schemas\UsersForm;
-use App\Filament\Resources\Users\Tables\UsersTable;
+use App\Filament\Resources\TugUsers\Pages\CreateTugUsers;
+use App\Filament\Resources\TugUsers\Pages\EditTugUsers;
+use App\Filament\Resources\TugUsers\Pages\ListTugUsers;
+use App\Filament\Resources\TugUsers\Schemas\TugUsersForm;
+use App\Filament\Resources\TugUsers\Tables\TugUsersTable;
 use App\Models\User;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -14,32 +14,32 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
-class UsersResource extends Resource
+class TugUsersResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;
 
     public static function getLabel(): ?string
     {
-        return 'Użytkownik';
+        return 'Holownik';
     }
 
     public static function getPluralLabel(): ?string
     {
-        return 'Użytkownicy';
+        return 'Holowniki';
     }
 
-    protected static ?string $recordTitleAttribute = 'User';
+    protected static ?string $recordTitleAttribute = 'TugUser';
 
     public static function form(Schema $schema): Schema
     {
-        return UsersForm::configure($schema);
+        return TugUsersForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return UsersTable::configure($table);
+        return TugUsersTable::configure($table);
     }
 
     public static function getRelations(): array
@@ -52,9 +52,9 @@ class UsersResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListUsers::route('/'),
-            'create' => CreateUsers::route('/create'),
-            'edit' => EditUsers::route('/{record}/edit'),
+            'index' => ListTugUsers::route('/'),
+            'create' => CreateTugUsers::route('/create'),
+            'edit' => EditTugUsers::route('/{record}/edit'),
         ];
     }
 

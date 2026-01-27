@@ -18,7 +18,7 @@ class IncidentResource extends Resource
 {
     protected static ?string $model = Incident::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedExclamationTriangle;
 
     public static function getLabel(): ?string
     {
