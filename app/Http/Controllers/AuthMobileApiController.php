@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthMobileApiController extends Controller
 {
@@ -23,12 +26,19 @@ class AuthMobileApiController extends Controller
 
         $user->tokens()->delete();
 
-        $token = $user->createToken('mobile-app')->plainTextToken;
+        $token = $user->createToken('mobile-app');
+        
+        PersonalAccessToken::where([
+            ['id', $token->accessToken->id],
+        ])->update([
+            'user_id' => $user->id,
+            'plain_token' => $token->plainTextToken,
+        ]);
 
         return response()->json([
-            'token' => $token,
+            'token' => $token->plainTextToken,
             'user' => $user,
-        ]);
+        ], 200);
     }
 
     public function logout(Request $request)
@@ -36,7 +46,7 @@ class AuthMobileApiController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Wylogowano',
-        ]);
+            'message' => 'Logged out',
+        ], 200);
     }
 }

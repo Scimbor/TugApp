@@ -10,6 +10,7 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class EditTugUsers extends EditRecord
 {
@@ -17,7 +18,7 @@ class EditTugUsers extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        $hasToken = $this->record && $this->record->exists && \Laravel\Sanctum\PersonalAccessToken::where('user_id', $this->record->id)->whereNotNull('plain_token')->exists();
+        $hasToken = $this->record && $this->record->exists && PersonalAccessToken::where('user_id', $this->record->id)->whereNotNull('plain_token')->exists();
         
         return [
             Action::make('generateToken')
@@ -36,13 +37,12 @@ class EditTugUsers extends EditRecord
                     
                     $token = $user->createToken('mobile-app-token');
                     
-                    // Store plain text token and user_id in personal_access_tokens table
-                    DB::connection('mysql')->table('personal_access_tokens')
-                        ->where('id', $token->accessToken->id)
-                        ->update([
-                            'user_id' => $user->id,
-                            'plain_token' => $token->plainTextToken,
-                        ]);
+                    PersonalAccessToken::where([
+                        ['id', $token->accessToken->id],
+                    ])->update([
+                        'user_id' => $user->id,
+                        'plain_token' => $token->plainTextToken,
+                    ]);
                     
                     Notification::make()
                         ->title('Token wygenerowany')
@@ -93,7 +93,7 @@ class EditTugUsers extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Load plain token from personal_access_tokens table by user_id
-        $token = \Laravel\Sanctum\PersonalAccessToken::where('user_id', $this->record->id)
+        $token = PersonalAccessToken::where('user_id', $this->record->id)
             ->whereNotNull('plain_token')
             ->first();
         $data['api_token'] = $token ? $token->plain_token : null;

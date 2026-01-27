@@ -11,6 +11,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use Filament\Panel;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -83,5 +84,10 @@ class User extends Authenticatable implements FilamentUser
         ->useLogName('User Log')
         ->logOnly($this->fillable)
         ->logOnlyDirty();
+    }
+
+    public function personalAccessToken()
+    {
+        return $this->hasOne(PersonalAccessToken::class, 'user_id');
     }
 }
