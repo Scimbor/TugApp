@@ -1,33 +1,44 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
-it('Get user token', function () {
-    $response = $this->post('/api/mobile/login', [
-        'email' => 'holownik@wp.pl',
-        'password' => '1234',
-    ]);
-
-    $response->assertStatus(200);
-    $response->assertJsonStructure([
-        'token',
-        'user',
+beforeEach(function () {
+    $this->tempUser = User::factory()->create([
+        'role' => 'tug',
+        'email' => time().'_tempuser@test.com',
+        'password' => Hash::make('secret123'),
     ]);
 });
 
-it('Logout user', function () {
-    $user = User::where('email', 'holownik@wp.pl')->first();
-    $plainToken = $user->personalAccessToken->plain_token;
+afterEach(function () {
+    $this->tempUser->delete();
+});
 
-    $response = $this
-        ->withHeader('Authorization', 'Bearer ' . $plainToken)
+it('Logs in user, generates token, and logs out', function () {
+    $user = $this->tempUser;
+
+    $loginResponse = $this->post('/api/mobile/login', [
+        'email' => $user->email,
+        'password' => 'secret123',
+    ]);
+
+    $loginResponse->assertStatus(200);
+    $loginResponse->assertJsonStructure(['token', 'user']);
+
+    $token = $loginResponse->json('token');
+
+    $this->assertDatabaseHas('personal_access_tokens', [
+        'tokenable_id' => $user->id,
+        'tokenable_type' => get_class($user),
+    ]);
+
+    $logoutResponse = $this
+        ->withHeader('Authorization', 'Bearer ' . $token)
         ->post('/api/mobile/logout');
 
-    $response->assertStatus(200);
-    $response->assertJson([
-        'message' => 'Logged out',
-    ]);
+    $logoutResponse->assertStatus(200);
+    $logoutResponse->assertJson(['message' => 'Logged out']);
 
     expect($user->tokens()->count())->toBe(0);
 });
-

@@ -6,14 +6,25 @@ use App\Models\IncidentImage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-it('Get incidents list', function () {
-    $response = $this->post('/api/mobile/login', [
-        'email' => 'holownik@wp.pl',
-        'password' => '1234',
+beforeEach(function () {
+    $this->tempUser = User::factory()->create([
+        'role' => 'tug',
+        'email' => time().'_tempuser@test.com',
+        'password' => Hash::make('secret123'),
     ]);
 
-    $user = User::where('email', 'holownik@wp.pl')->first();
-    $plainToken = $user->personalAccessToken->plain_token;
+    $loginResponse = $this->post('/api/mobile/login', [
+        'email' => $this->tempUser->email,
+        'password' => 'secret123',
+    ]);
+});
+
+afterEach(function () {
+    $this->tempUser->delete();
+});
+
+it('Get incidents list', function () {
+    $plainToken = $this->tempUser->personalAccessToken->plain_token;
 
     $response = $this
         ->withHeader('Authorization', 'Bearer ' . $plainToken)
@@ -50,14 +61,8 @@ it('Get incidents list', function () {
 });
 
 it('Update incident status', function () {
-    $response = $this->post('/api/mobile/login', [
-        'email' => 'holownik@wp.pl',
-        'password' => '1234',
-    ]);
-
-    $incidentId = 2;
-    $user = User::where('email', 'holownik@wp.pl')->first();
-    $plainToken = $user->personalAccessToken->plain_token;
+    $incidentId = 1;
+    $plainToken =$this->tempUser->personalAccessToken->plain_token;
 
     $response = $this
         ->withHeader('Authorization', 'Bearer ' . $plainToken)
@@ -76,14 +81,8 @@ it('Update incident status', function () {
 });
 
 it('Uploads incident images', function () {
-    $response = $this->post('/api/mobile/login', [
-        'email' => 'holownik@wp.pl',
-        'password' => '1234',
-    ]);
-
-    $incidentId = 2;
-    $user = User::where('email', 'holownik@wp.pl')->first();
-    $plainToken = $user->personalAccessToken->plain_token;
+    $incidentId = 1;
+    $plainToken = $this->tempUser->personalAccessToken->plain_token;
 
     $photoName1 = md5('photo1').'.jpg';
     $photoName2 = md5('photo2').'.jpg';
