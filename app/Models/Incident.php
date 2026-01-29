@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Incident extends Model
 {
-    use LogsActivity;
+    use LogsActivity, HasFactory;
 
     const STATUS_OPEN = 'open';
     const STATUS_CLOSED = 'closed';
@@ -81,7 +82,7 @@ class Incident extends Model
 
     public function depositFees()
     {
-        return $this->hasMany(IncidentDepositFee::class);
+        return $this->hasOne(IncidentDepositFee::class);
     }
 
     public function getActivitylogOptions(): LogOptions

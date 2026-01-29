@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class IncidentAddress extends Model
 {
+    use HasFactory;
+
     protected $table = 'incidents_address';
 
     protected $fillable = [
@@ -20,7 +23,7 @@ class IncidentAddress extends Model
 
     public function incident(): BelongsTo
     {
-        return $this->belongsTo(Incident::class);
+        return $this->hasOne(Incident::class);
     }
 }
 

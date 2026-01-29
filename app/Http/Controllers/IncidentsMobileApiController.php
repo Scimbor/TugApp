@@ -14,7 +14,7 @@ class IncidentsMobileApiController extends Controller
         $incidents = Incident::with('address')->where('status', '=',  Incident::STATUS_OPEN)->get();
 
         return response()->json([
-            'incidents' => $incidents ?? [],
+            'incidents' => $incidents->toArray() ?? [],
         ], 200);
     }
 

@@ -5,6 +5,7 @@ use App\Models\Incident;
 use App\Models\IncidentImage;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use App\Models\IncidentAddress;
 
 beforeEach(function () {
     $this->tempUser = User::factory()->create([
@@ -17,10 +18,15 @@ beforeEach(function () {
         'email' => $this->tempUser->email,
         'password' => 'secret123',
     ]);
+
+    $this->incident = Incident::factory()
+    ->has(IncidentAddress::factory(), 'address')
+    ->create();
 });
 
 afterEach(function () {
     $this->tempUser->delete();
+    Incident::where('id', $this->incident->id)->delete();
 });
 
 it('Get incidents list', function () {
@@ -61,7 +67,7 @@ it('Get incidents list', function () {
 });
 
 it('Update incident status', function () {
-    $incidentId = 1;
+    $incidentId = $this->incident->id;
     $plainToken =$this->tempUser->personalAccessToken->plain_token;
 
     $response = $this
@@ -81,7 +87,7 @@ it('Update incident status', function () {
 });
 
 it('Uploads incident images', function () {
-    $incidentId = 1;
+    $incidentId = $this->incident->id;
     $plainToken = $this->tempUser->personalAccessToken->plain_token;
 
     $photoName1 = md5('photo1').'.jpg';
