@@ -7,25 +7,21 @@ use Livewire\Livewire;
 beforeEach(function () {
     $this->tempAdminUser = User::factory()->create([
         'role' => 'admin',
-        'email' => time().'_tempuser@test.com',
+        'email' => fake()->unique()->safeEmail(),
         'password' => Hash::make('secret123'),
         'is_active' => true,
     ]);
 
-    sleep(1);
-
     $this->tempNormalNonActiveUser = User::factory()->create([
         'role' => 'user',
-        'email' => time().'_tempuser@test.com',
+        'email' => fake()->unique()->safeEmail(),
         'password' => Hash::make('secret123'),
         'is_active' => false,
     ]);
 
-    sleep(1);
-
     $this->tempNormalActiveUser = User::factory()->create([
         'role' => 'user',
-        'email' => time().'_tempuser@test.com',
+        'email' => fake()->unique()->safeEmail(),
         'password' => Hash::make('secret123'),
         'is_active' => true,
     ]);
