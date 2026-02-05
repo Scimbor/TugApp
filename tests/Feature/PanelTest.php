@@ -90,6 +90,14 @@ it('Edits incident with faker data', function () {
         ],
     ]);
 
+    $photoName1 = md5('photo1').'.jpg';
+    $photoName2 = md5('photo2').'.jpg';
+
+    $files = [
+        UploadedFile::fake()->image($photoName1),
+        UploadedFile::fake()->image($photoName2),
+    ];
+
     $updatedData = [
         'vehicle_number' => fake()->bothify('KR###??'),
         'vehicle_vin' => fake()->bothify('#################'),
@@ -105,7 +113,12 @@ it('Edits incident with faker data', function () {
             'city' => fake()->city(),
             'zip' => fake()->postcode(),
         ],
+        'images' => array_map(fn($file) => ['image_path' => IncidentImage::IMAGES_DIRECTORY . '/' . $file->getClientOriginalName()], $files),
     ];
+
+    foreach ($files as $file) {
+        $file->storeAs(IncidentImage::IMAGES_DIRECTORY . '/' . $incident->id, $file->getClientOriginalName());
+    }
     
     IncidentUpdater::updateFromFormData($incident,
     $updatedData);
@@ -124,11 +137,17 @@ it('Edits incident with faker data', function () {
     expect($editIncident->address->apartment_number)->toEqual($updatedData['address']['apartment_number']);
     expect($editIncident->address->city)->toBe($updatedData['address']['city']);
     expect($editIncident->address->zip)->toBe($updatedData['address']['zip']);
+    
+    foreach ($files as $file) {
+        $imageName = $file->getClientOriginalName();
+        Storage::assertExists(
+            IncidentImage::IMAGES_DIRECTORY . '/' . $incident->id . '/' . $imageName
+        );
+    }
 });
 
-
 it('Deletes an incident via filament delete action', function () {
-    $incident = Incident::whereNotIn('status', Incident::CLOSED_MODIFICATION_ROW_STATUSES)->latest()->first();
+    $incident = Incident::where('status', Incident::STATUS_PENDING)->latest()->first();
 
     Livewire::test(ListIncidents::class)
     ->callTableAction('delete', $incident)
@@ -139,4 +158,29 @@ it('Deletes an incident via filament delete action', function () {
     $this->assertDatabaseMissing('incidents_images', ['incident_id' => $incident->id]);
 
     Storage::assertMissing(IncidentImage::IMAGES_DIRECTORY . '/' . $incident->id);
+});
+
+it('Add incident deposit fee', function () {
+    $incident = IncidentCreator::createFromFormData([
+        'vehicle_number' => fake()->bothify('KR###??'),
+        'vehicle_vin' => fake()->bothify('#################'),
+        'vehicle_brand' => fake()->company(),
+        'vehicle_model' => fake()->word(),
+        'vehicle_type' => 'car',
+        'description' => fake()->sentence(),
+        'status' => Incident::STATUS_OPEN,
+        'address' => [
+            'street' => fake()->streetName(),
+            'house_number' => fake()->buildingNumber(),
+            'apartment_number' => fake()->randomDigit(),
+            'city' => fake()->city(),
+            'zip' => fake()->postcode(),
+        ],
+    ]);
+    
+    $incident->update([
+        'status' => Incident::STATUS_COMPLETED,
+    ]);
+
+    expect($incident->depositFees->count())->toBe(1);
 });

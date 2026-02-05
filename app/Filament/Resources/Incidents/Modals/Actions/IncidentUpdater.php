@@ -44,6 +44,15 @@ class IncidentUpdater
         self::syncImages($incident, $data['images'] ?? []);
 
         $modelData = Arr::except($data, ['address', 'depositFee', 'images']);
+        $fillable = $incident->getFillable();
+        $existing = $incident->only($fillable);
+        foreach ($fillable as $key) {
+            if (!array_key_exists($key, $modelData) || $modelData[$key] === '' || $modelData[$key] === null) {
+                if (array_key_exists($key, $existing)) {
+                    $modelData[$key] = $existing[$key];
+                }
+            }
+        }
         $incident->update($modelData);
     }
 

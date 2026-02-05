@@ -40,7 +40,8 @@ class IncidentModalFormSchema
             ])
             ->label('Zdjęcia incydentu')
             ->columns(1)
-            ->addActionLabel('Dodaj zdjęcie');
+            ->addActionLabel('Dodaj zdjęcie')
+            ->disabled($isClosed);
 
         if ($forCreate) {
             $statusSelect = $statusSelect->default(Incident::STATUS_OPEN);
@@ -79,8 +80,7 @@ class IncidentModalFormSchema
                 ->schema([
                     $statusSelect,
                     $imagesRepeater,
-                ])
-                ->disabled($isClosed),
+                ]),
             Section::make('Opłata za depozyt')
                 ->schema([
                     TextInput::make('depositFee.fee')->label('Kwota')->numeric()->minValue(0)->step(0.01)->nullable(),
