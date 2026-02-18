@@ -3,6 +3,8 @@
 use App\Models\User;
 use App\Models\Incident;
 use App\Filament\Resources\Incidents\Pages\ListIncidents;
+use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Filament\Resources\TugUsers\Pages\ListTugUsers;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -177,10 +179,63 @@ it('Add incident deposit fee', function () {
             'zip' => fake()->postcode(),
         ],
     ]);
-    
+
     $incident->update([
         'status' => Incident::STATUS_COMPLETED,
     ]);
 
-    expect($incident->depositFees->count())->toBe(1);
+    $this->assertDatabaseHas('incidents_deposits_fee', ['incident_id' => $incident->id]);
+
+    $fee = $incident->fresh()->depositFees;
+    
+    expect($fee)->not->toBeNull();
+    expect($fee->incident_id)->toBe($incident->id);
+});
+
+it('Deactivates user of type user', function () {
+    $admin = User::factory()->create([
+        'role' => User::ADMIN_ROLE,
+        'email' => fake()->unique()->safeEmail(),
+        'password' => Hash::make('secret123'),
+        'is_active' => true,
+    ]);
+
+    $targetUser = User::factory()->create([
+        'role' => User::USER_ROLE,
+        'email' => fake()->unique()->safeEmail(),
+        'password' => Hash::make('secret123'),
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($admin);
+
+    Livewire::test(ListUsers::class)
+        ->callTableAction('deactivate', $targetUser)
+        ->assertHasNoActionErrors();
+
+    expect($targetUser->fresh()->is_active)->toBeFalse();
+});
+
+it('Deactivates user of type tug', function () {
+    $admin = User::factory()->create([
+        'role' => User::ADMIN_ROLE,
+        'email' => fake()->unique()->safeEmail(),
+        'password' => Hash::make('secret123'),
+        'is_active' => true,
+    ]);
+
+    $targetTugUser = User::factory()->create([
+        'role' => User::TUG_ROLE,
+        'email' => fake()->unique()->safeEmail(),
+        'password' => Hash::make('secret123'),
+        'is_active' => true,
+    ]);
+
+    $this->actingAs($admin);
+
+    Livewire::test(ListTugUsers::class)
+        ->callTableAction('deactivate', $targetTugUser)
+        ->assertHasNoActionErrors();
+
+    expect($targetTugUser->fresh()->is_active)->toBeFalse();
 });
